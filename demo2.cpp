@@ -14,8 +14,8 @@ void bubble_sort(unsigned short *arr, size_t arr_size);
 void qsort(unsigned short *arr, size_t arr_size);
 void qsort_o(unsigned short *arr, size_t arr_size);
 void heapsort(unsigned short *arr, size_t arr_size);
-void mergesort (unsigned short *arr, size_t arr_size); //, int (*compar)(const void *, const void *)) {
-
+void mergesort (unsigned short *arr, size_t arr_size, int (*compar)(const void *, const void *));
+int my_compare(const void* p1, const void* p2);
 
 int main(int argc, char ** argv) {
 	srand((unsigned int)time(NULL));
@@ -26,7 +26,7 @@ int main(int argc, char ** argv) {
 	// memcpy(somearray2, somearray, sizeof(somearray));
 	print_array(somearray, ARR_SIZE);
 	printf("\nSorting!\n");
-	mergesort(somearray, ARR_SIZE);
+	mergesort(somearray, ARR_SIZE, my_compare);
 	print_array(somearray, ARR_SIZE);
 	// double start = clock();
 	// qsort(somearray, ARR_SIZE);
@@ -83,19 +83,30 @@ void sift(unsigned short *arr, size_t i, size_t j){
 	}
 }
 
-void mergesort (unsigned short *arr, size_t arr_size) { //, int (*compar)(const void *, const void *)) {
+// typedef int (*comparator)(const void *, const void *);
+
+int my_compare(const void* p1, const void* p2) {
+	if (*((unsigned short*)p1) == *((unsigned short*)p2))
+		return 0;
+	else if (*((unsigned short*)p1) < *((unsigned short*)p2))
+		return -1;
+	else
+		return 1;
+}
+
+void mergesort (unsigned short *arr, size_t arr_size, int (*compar)(const void *, const void *)) {
 	if (arr_size == 1)
 		return;
 	else {
-		mergesort(arr, arr_size/2);
-		mergesort(arr + arr_size/2, (arr_size - arr_size/2));
+		mergesort(arr, arr_size/2, compar);
+		mergesort(arr + arr_size/2, (arr_size - arr_size/2), compar);
 	}
 	unsigned short *arr2 = arr + arr_size/2;
 	unsigned short *buf = (unsigned short*) malloc(sizeof(arr[0]) * arr_size);
 
 	int i=0, j=0;
 	for (; i < arr_size/2 && j < (arr_size - arr_size/2);){
-		if (arr[i] < arr2[j]) {
+		if (compar(&arr[i], &arr2[j]) < 0) {
 			buf[i + j] = arr[i];
 			i++;
 		}
@@ -108,11 +119,6 @@ void mergesort (unsigned short *arr, size_t arr_size) { //, int (*compar)(const 
 		buf[i+j] = arr[i], i++;
 	while (j < (arr_size - arr_size/2))
 		buf[i+j] = arr2[j], j++;
-
-	// print_array(arr, arr_size, false);
-	// printf("   SORTED:   ");
-	// print_array(buf, arr_size);
-
 	memcpy(arr, buf, arr_size * sizeof(arr[0]));
 }
 
