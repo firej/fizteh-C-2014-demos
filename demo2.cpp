@@ -5,29 +5,35 @@
 #include <memory.h>
 #include <time.h>
 
-#define ARR_SIZE 640000
+#define ARR_SIZE 20
+
+// typedef unsigned int size_t;
 
 void print_array(unsigned short *arr, size_t arr_size);
 void bubble_sort(unsigned short *arr, size_t arr_size);
 void qsort(unsigned short *arr, size_t arr_size);
 void qsort_o(unsigned short *arr, size_t arr_size);
+void heapsort(unsigned short *arr, size_t arr_size);
+
 
 int main(int argc, char ** argv) {
 	srand((unsigned int)time(NULL));
 	unsigned short somearray[ARR_SIZE], somearray2[ARR_SIZE];
 	for (size_t i = 0; i < ARR_SIZE; i++) {
-		somearray[i] = rand() % 100000;
+		somearray[i] = rand() % 100;
 	}
-	memcpy(somearray2, somearray, sizeof(somearray));
+	// memcpy(somearray2, somearray, sizeof(somearray));
+	print_array(somearray, ARR_SIZE);
 	printf("\nSorting!\n");
-	
-	double start = clock();
-	qsort(somearray, ARR_SIZE);
-	printf("Обычный qsort - %.4lf sec.\n", (clock() - start / CLOCKS_PER_SEC) / 1000000);
+	heapsort(somearray, ARR_SIZE);
+	print_array(somearray, ARR_SIZE);
+	// double start = clock();
+	// qsort(somearray, ARR_SIZE);
+	// printf("Обычный qsort - %.4lf sec.\n", (clock() - start / CLOCKS_PER_SEC) / 1000000);
 
-	double start2 = clock();
-	qsort_o(somearray2, ARR_SIZE);
-	printf("Оптимизированный qsort - %.4lf sec.\n", (clock() - start2 / CLOCKS_PER_SEC) / 1000000);
+	// double start2 = clock();
+	// qsort_o(somearray2, ARR_SIZE);
+	// printf("Оптимизированный qsort - %.4lf sec.\n", (clock() - start2 / CLOCKS_PER_SEC) / 1000000);
 	printf("\n");
 	return 0;
 }
@@ -44,6 +50,68 @@ void swap(unsigned short *el1, unsigned short *el2) {
 	*el1 ^= *el2;
 	*el2 ^= *el1;
 }
+
+void sift(unsigned short *arr, size_t i, size_t j);
+
+void heapsort(unsigned short *arr, size_t arr_size){
+	for (int i = arr_size/2-1; i >=0 ;i--){
+		sift(arr, (size_t)i, arr_size);
+	}
+	for (size_t i = arr_size-1; i >= 1; i--){
+		swap(&arr[0], &arr[i]);
+		sift(arr, 0, i-1);
+	}
+}
+
+void sift(unsigned short *arr, size_t i, size_t j){
+	bool end = false;
+	size_t max;
+	while((i*2 < j) && (!end)){
+		if (arr[i*2] > arr[i*2 + 1])
+			max = i*2;
+		else
+			max = i*2 + 1;
+
+		if (arr[i] < arr[max]){
+			swap(&arr[i], &arr[max]);
+			i = max;
+		}
+		else
+			end = true;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void qsort(unsigned short *arr, size_t arr_size) {
 	// sleep(1);
