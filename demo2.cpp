@@ -9,11 +9,12 @@
 
 // typedef unsigned int size_t;
 
-void print_array(unsigned short *arr, size_t arr_size);
+void print_array(unsigned short *arr, size_t arr_size, bool carriage = true);
 void bubble_sort(unsigned short *arr, size_t arr_size);
 void qsort(unsigned short *arr, size_t arr_size);
 void qsort_o(unsigned short *arr, size_t arr_size);
 void heapsort(unsigned short *arr, size_t arr_size);
+void mergesort (unsigned short *arr, size_t arr_size); //, int (*compar)(const void *, const void *)) {
 
 
 int main(int argc, char ** argv) {
@@ -25,7 +26,7 @@ int main(int argc, char ** argv) {
 	// memcpy(somearray2, somearray, sizeof(somearray));
 	print_array(somearray, ARR_SIZE);
 	printf("\nSorting!\n");
-	heapsort(somearray, ARR_SIZE);
+	mergesort(somearray, ARR_SIZE);
 	print_array(somearray, ARR_SIZE);
 	// double start = clock();
 	// qsort(somearray, ARR_SIZE);
@@ -38,11 +39,12 @@ int main(int argc, char ** argv) {
 	return 0;
 }
 
-void print_array(unsigned short *arr, size_t arr_size) {
+void print_array(unsigned short *arr, size_t arr_size, bool carriage) {
 	for (size_t i = 0; i < arr_size; i++){
 		printf("%4d", arr[i]);
 	}
-	printf("\n");
+	if (carriage)
+		printf("\n");
 }
 
 void swap(unsigned short *el1, unsigned short *el2) {
@@ -81,8 +83,38 @@ void sift(unsigned short *arr, size_t i, size_t j){
 	}
 }
 
+void mergesort (unsigned short *arr, size_t arr_size) { //, int (*compar)(const void *, const void *)) {
+	if (arr_size == 1)
+		return;
+	else {
+		mergesort(arr, arr_size/2);
+		mergesort(arr + arr_size/2, (arr_size - arr_size/2));
+	}
+	unsigned short *arr2 = arr + arr_size/2;
+	unsigned short *buf = (unsigned short*) malloc(sizeof(arr[0]) * arr_size);
 
+	int i=0, j=0;
+	for (; i < arr_size/2 && j < (arr_size - arr_size/2);){
+		if (arr[i] < arr2[j]) {
+			buf[i + j] = arr[i];
+			i++;
+		}
+		else {
+			buf[i + j] = arr2[j];
+			j++;
+		}
+	}
+	while (i < arr_size/2)
+		buf[i+j] = arr[i], i++;
+	while (j < (arr_size - arr_size/2))
+		buf[i+j] = arr2[j], j++;
 
+	// print_array(arr, arr_size, false);
+	// printf("   SORTED:   ");
+	// print_array(buf, arr_size);
+
+	memcpy(arr, buf, arr_size * sizeof(arr[0]));
+}
 
 
 
