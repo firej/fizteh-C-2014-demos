@@ -16,6 +16,9 @@ void qsort_o(unsigned short *arr, size_t arr_size);
 void heapsort(unsigned short *arr, size_t arr_size);
 void mergesort (unsigned short *arr, size_t arr_size, int (*compar)(const void *, const void *));
 int my_compare(const void* p1, const void* p2);
+void insertionsort(unsigned short *arr, size_t arr_size, size_t order);
+void shellsort(unsigned short *arr, size_t arr_size);
+void radixsort(unsigned short *arr, size_t arr_size);
 
 int main(int argc, char ** argv) {
 	srand((unsigned int)time(NULL));
@@ -25,16 +28,17 @@ int main(int argc, char ** argv) {
 	}
 	// memcpy(somearray2, somearray, sizeof(somearray));
 	print_array(somearray, ARR_SIZE);
+	double start = clock();
 	printf("\nSorting!\n");
-	mergesort(somearray, ARR_SIZE, my_compare);
-	print_array(somearray, ARR_SIZE);
-	// double start = clock();
+	radixsort(somearray, ARR_SIZE);
 	// qsort(somearray, ARR_SIZE);
-	// printf("Обычный qsort - %.4lf sec.\n", (clock() - start / CLOCKS_PER_SEC) / 1000000);
+	// shellsort(somearray, ARR_SIZE);
+	// insertionsort(somearray, ARR_SIZE, 1);
+	// heapsort(somearray, ARR_SIZE);
+	// mergesort(somearray, ARR_SIZE, my_compare);
+	print_array(somearray, ARR_SIZE);
+	printf("sorting: - %.4lf sec.\n", (clock() - start / CLOCKS_PER_SEC) / 1000000);
 
-	// double start2 = clock();
-	// qsort_o(somearray2, ARR_SIZE);
-	// printf("Оптимизированный qsort - %.4lf sec.\n", (clock() - start2 / CLOCKS_PER_SEC) / 1000000);
 	printf("\n");
 	return 0;
 }
@@ -122,33 +126,22 @@ void mergesort (unsigned short *arr, size_t arr_size, int (*compar)(const void *
 	memcpy(arr, buf, arr_size * sizeof(arr[0]));
 }
 
+int ds[] = {1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597};
+void insertionsort(unsigned short *arr, size_t arr_size, size_t order){
+	if (arr_size < order * 2) return;
+	for (int i = order; i < arr_size; i += order) {
+		for (int j = i; (j > 0) && (arr[j] < arr[j - order]); j -= order)
+			swap(arr + j, arr + (j - order));
+	}
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+void shellsort(unsigned short *arr, size_t arr_size){
+	for (int i = 15; i >= 0; i--){
+		for (int j = 0; j < arr_size && j < ds[i]; j++){
+			insertionsort(arr + j, arr_size - j, ds[i]);
+		}
+	}
+}
 
 
 void qsort(unsigned short *arr, size_t arr_size) {
