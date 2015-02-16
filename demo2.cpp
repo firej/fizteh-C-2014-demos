@@ -4,6 +4,7 @@
 #include <math.h>
 #include <memory.h>
 #include <time.h>
+#include <unistd.h>
 
 #define ARR_SIZE 20
 
@@ -20,24 +21,32 @@ void insertionsort(unsigned short *arr, size_t arr_size, size_t order);
 void shellsort(unsigned short *arr, size_t arr_size);
 void radixsort(unsigned short *arr, size_t arr_size);
 
+struct a{
+	int arr[1000];
+};
+
 int main(int argc, char ** argv) {
+	struct a b;
+	b.arr[0] = 1000;
+
+	struct a c = &b;
+
 	srand((unsigned int)time(NULL));
-	unsigned short somearray[ARR_SIZE], somearray2[ARR_SIZE];
+	unsigned short somearray[ARR_SIZE];
 	for (size_t i = 0; i < ARR_SIZE; i++) {
 		somearray[i] = rand() % 100;
 	}
-	// memcpy(somearray2, somearray, sizeof(somearray));
 	print_array(somearray, ARR_SIZE);
 	double start = clock();
 	printf("\nSorting!\n");
-	radixsort(somearray, ARR_SIZE);
+	// bubble_sort(somearray, ARR_SIZE);
 	// qsort(somearray, ARR_SIZE);
 	// shellsort(somearray, ARR_SIZE);
 	// insertionsort(somearray, ARR_SIZE, 1);
 	// heapsort(somearray, ARR_SIZE);
-	// mergesort(somearray, ARR_SIZE, my_compare);
-	print_array(somearray, ARR_SIZE);
-	printf("sorting: - %.4lf sec.\n", (clock() - start / CLOCKS_PER_SEC) / 1000000);
+	mergesort(somearray, ARR_SIZE, my_compare);
+	// print_array(somearray, ARR_SIZE);
+	// printf("sorting: - %.4lf sec.\n", (clock() - start / CLOCKS_PER_SEC) / 1000000);
 
 	printf("\n");
 	return 0;
@@ -55,6 +64,14 @@ void swap(unsigned short *el1, unsigned short *el2) {
 	*el2 ^= *el1;
 	*el1 ^= *el2;
 	*el2 ^= *el1;
+}
+
+void swap(void *el1, void *el2, size_t size) {
+	void* tmp = malloc(size);
+	memcpy(tmp, el1, size);
+	memcpy(el1, el2, size);
+	memcpy(el2, tmp, size);
+	free(tmp);
 }
 
 void sift(unsigned short *arr, size_t i, size_t j);
@@ -99,8 +116,10 @@ int my_compare(const void* p1, const void* p2) {
 }
 
 void mergesort (unsigned short *arr, size_t arr_size, int (*compar)(const void *, const void *)) {
-	if (arr_size == 1)
+	if (arr_size == 1){
+		depth--;
 		return;
+	}
 	else {
 		mergesort(arr, arr_size/2, compar);
 		mergesort(arr + arr_size/2, (arr_size - arr_size/2), compar);
@@ -211,6 +230,7 @@ void qsort_o(unsigned short *arr, size_t arr_size) {
 }
 
 void bubble_sort(unsigned short *arr, size_t arr_size) {
+
 	for (unsigned int i = 0; i < arr_size; i++){
 		for (unsigned int j = i; j < arr_size; j++){
 			if (arr[i] > arr[j]){
